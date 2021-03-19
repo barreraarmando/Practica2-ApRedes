@@ -9,7 +9,7 @@ package practica2;
  *
  * @author Rodrigo
  */
-public class Practica2 {
+public class SPractica2 {
 
     /**
      * @param args the command line arguments
