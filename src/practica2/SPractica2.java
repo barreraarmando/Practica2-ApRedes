@@ -4,6 +4,10 @@
  * and open the template in the editor.
  */
 package practica2;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 /**
  *
@@ -18,6 +22,7 @@ public class SPractica2 {
     }
     
     public static void main(String[] args) {
+        
         char[][] matriz = new char[15][15];
         String[] animales = {"perro", "gato", "abeja", "ballena", "burro",
                             "camello", "caracol", "cerdo", "ciervo", "elefante",
@@ -36,33 +41,50 @@ public class SPractica2 {
                         "cepillo", "champu", "colchon", "cortina", "tenedor",
                         "cuchara", "cuchillo", "escoba", "espejo", "flor"};
         
-        String[][] categorias = {animales, escuela, deportes, casa};
-        String[] categoriasS = {"animales", "escuela", "deportes", "casa"};
-        int letrasEnviadas = 15;
-        int randIndex = ThreadLocalRandom.current().nextInt(0, 4);
-        String[] categoria = categorias[randIndex];
-        String categoriaS = categoriasS[randIndex];
-        String[] palabras = new String[letrasEnviadas];
+        try{
+            String[][] categorias = {animales, escuela, deportes, casa};
+            String[] categoriasS = {"animales", "escuela", "deportes", "casa"};
+            int letrasEnviadas = 15;
         
-        int i = 0;
-        int[] palabraI = new int[letrasEnviadas];
-        while(i<15){
-            int randI = ThreadLocalRandom.current().nextInt(0, categoria.length);
-            boolean flag = true;
-            for (int j =0; j<palabraI.length; j++){
-                if (palabraI[j] == randI){
-                    flag = false;
+            ServerSocket ss = new ServerSocket(3000);
+            System.out.println("Servidor iniciado");
+            
+            for(;;){
+                int randIndex = ThreadLocalRandom.current().nextInt(0, 4);
+                String[] categoria = categorias[randIndex];
+                String categoriaS = categoriasS[randIndex];
+                String[] palabras = new String[letrasEnviadas];
+            
+                Socket cl = ss.accept();
+                ObjectOutputStream oos = new ObjectOutputStream(cl.getOutputStream());
+        
+                int i = 0;
+                int[] palabraI = new int[letrasEnviadas];
+                while(i<15){
+                    int randI = ThreadLocalRandom.current().nextInt(0, categoria.length);
+                    boolean flag = true;
+                    for (int j =0; j<palabraI.length; j++){
+                        if (palabraI[j] == randI){
+                            flag = false;
+                        }
+                    }
+                    if (flag == true){
+                        palabras[i] = categoria[randI];
+                        palabraI[i] = randI;
+                        i++;
+                    }
                 }
-            }
-            if (flag == true){
-                palabras[i] = categoria[randI];
-                palabraI[i] = randI;
-                i++;
-            }
-        }
 
-        matriz = llenarMatriz(matriz, palabras);
-        Objeto ob = new Objeto(categoriaS, palabras, matriz);
+                matriz = llenarMatriz(matriz, palabras);
+                Objeto ob = new Objeto(categoriaS, palabras, matriz);
+                oos.writeObject(ob);
+                oos.flush();
+                System.out.println("Cliente conectado.. Enviando objeto " );
+            }//for
+            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
       
     }
     
