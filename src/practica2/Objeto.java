@@ -14,6 +14,7 @@ class Objeto implements Serializable{
     String categoria;
     String[] palabras;
     char[][] matriz;
+    
     Objeto(String categoria, String[] palabras, char[][] matriz){
             this.categoria = categoria;
             this.palabras = palabras;
